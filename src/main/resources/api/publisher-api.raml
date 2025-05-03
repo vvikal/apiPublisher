@@ -1,0 +1,162 @@
+#%RAML 1.0
+title: apiPublisher
+version: 1.0
+baseUri: api/publisher
+mediaType: application/json
+
+types:
+  subscriptionRequest:
+    description: metadata for subscription API
+    type: object
+    properties:
+      apiName : 
+        type : string
+        required: true
+        example:
+          "Cusotmer API"
+      apiVersion : 
+        type : string
+        required: false
+        example:
+          "v1"
+      consumerEmail : 
+        type : string
+        example:
+          "dl_list@example.com"
+      reason : 
+        type : string
+        required: true 
+        example:
+          "need to work on this api. "
+      slaTier?:
+        type: string
+        enum : [Bronze, Silver , Gold]
+  ApiMetadata:
+    description: metadata for publishing API
+    type: object
+    properties:
+      name:
+        type: string
+        required: true
+        example:
+          Customer API
+      version:
+        type: string
+        required: true
+        example:
+          v1
+      description:
+        type: string
+        required: true
+        example:
+          API for managing customer records
+      owner:
+        type: string 
+        required: true
+        example:
+          dl_list@example.com
+
+
+/apis:
+  description: Endpoint to send post request
+  post:
+    description: Post method
+    body:
+      application/json:
+        type: ApiMetadata
+        example:
+          {
+            "name": "Cusotmer API",
+            "description": "API for managing customer records",
+            "version" : "v1",
+            "owner": "dl_list@example.com"
+          }
+    responses:
+      201:
+        description: Request Created
+        body:
+          application/json:
+            example:
+              {
+                "message" : "Api published Successfully",
+                "status" : "Success"
+              }
+      400:
+        description:  invalid input
+        body:
+          application/json:
+            example:
+              {
+                "message" : "Missing or invalid fields",
+                "status" : "Failed"
+              } 
+          
+  get:
+    description: To fetch the entered APIs
+    queryParameters:
+      search:
+        description: filter APIs by name
+        type: string
+        required: false
+    responses:
+      200:
+        description: Object fetched
+        body:
+          application/json:
+            example:
+              {
+                "name": "Cusotmer API",
+                "description": "API for managing customer records",
+                "version" : "v1",
+                "owner": "dl_list@example.com"
+              }      
+
+/subscriptions:
+  description: Endpoint to submit a request to subscribe API
+  post:
+    description: posting request
+    body:
+      application/json:
+        type: subscriptionRequest
+        example:
+          {
+            "apiName" : "User_3",
+            "apiVersion" : "v1",
+            "consumerEmail" : "dl_list@example.com",
+            "reason" : "To use APi",
+            "slaTier" : "Silver"
+          }
+    responses:
+      201:
+        body:
+          application/json:
+            example:
+              {
+                "message": "Subscription request submitted",
+                "status": "success"
+              }
+      400:
+        body:
+          application/json:
+            example:
+              {
+                "message": "Invalid request",
+                "status": "error"
+              }
+        
+  get:
+    description: Fetching Request
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              [
+                {
+                  "apiName" : "User_3",
+                  "apiVersion" : "v1",
+                  "consumerEmail" : "dl_list@example.com",
+                  "reason" : "To use APi",
+                  "slaTier" : "Silver"
+                }
+              ]
